@@ -1,0 +1,72 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.datasets import load_diabetes
+#load the data
+data=pd.read_csv('/content/diabetes_prediction_dataset.csv')
+
+# Load the diabetes dataset
+diabetes_data = load_diabetes()
+X, y = diabetes_data.data, diabetes_data.target
+
+# Convert the data into a pandas DataFrame
+diabetes_df = pd.DataFrame(data=X, columns=diabetes_data.feature_names)
+diabetes_df['target'] = y
+
+# Splitting the dataset into features and target
+X = diabetes_df.drop('target', axis=1)
+y = diabetes_df['target']
+
+# Splitting the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Random Forest Classifier
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_classifier.fit(X_train_scaled, y_train)
+rf_pred = rf_classifier.predict(X_test_scaled)
+rf_accuracy = accuracy_score(y_test, rf_pred)
+print("Random Forest Classifier Accuracy:", rf_accuracy)
+print(classification_report(y_test, rf_pred))
+
+# K-Nearest Neighbors (KNN)
+knn_classifier = KNeighborsClassifier(n_neighbors=5)
+knn_classifier.fit(X_train_scaled, y_train)
+knn_pred = knn_classifier.predict(X_test_scaled)
+knn_accuracy = accuracy_score(y_test, knn_pred)
+print("KNN Classifier Accuracy:", knn_accuracy)
+print(classification_report(y_test, knn_pred))
+
+# AdaBoost Classifier
+adaboost_classifier = AdaBoostClassifier(n_estimators=100, random_state=42)
+adaboost_classifier.fit(X_train_scaled, y_train)
+adaboost_pred = adaboost_classifier.predict(X_test_scaled)
+adaboost_accuracy = accuracy_score(y_test, adaboost_pred)
+print("AdaBoost Classifier Accuracy:", adaboost_accuracy)
+print(classification_report(y_test, adaboost_pred))
+
+# Linear Regression
+linear_reg = LogisticRegression(max_iter=1000)
+linear_reg.fit(X_train_scaled, y_train)
+linear_reg_pred = linear_reg.predict(X_test_scaled)
+linear_reg_accuracy = accuracy_score(y_test, linear_reg_pred)
+print("Linear Regression Accuracy:", linear_reg_accuracy)
+print(classification_report(y_test, linear_reg_pred))
+
+# Decision Tree Classifier
+dt_classifier = DecisionTreeClassifier(random_state=42)
+dt_classifier.fit(X_train_scaled, y_train)
+dt_pred = dt_classifier.predict(X_test_scaled)
+dt_accuracy = accuracy_score(y_test, dt_pred)
+print("Decision Tree Classifier Accuracy:", dt_accuracy)
+print(classification_report(y_test, dt_pred))
